@@ -2,6 +2,10 @@ secrets:
   mariadb_password:
     file: ./mariadb_password.txt
 
+networks:
+  proxy:
+  backend:
+
 services:
   npm:
     image: jc21/nginx-proxy-manager:${NPM_TAG}
@@ -12,6 +16,9 @@ services:
       - ${HTTP_PORT}:80
       - ${HTTPS_PORT}:443
       - ${ADMIN_PORT}:81
+    networks:
+      - proxy
+      - backend
     volumes:
       - ${VOLUME_PATH}/data:/data
       - ${VOLUME_PATH}/etc/letsencrypt:/etc/letsencrypt
@@ -29,6 +36,8 @@ services:
     restart: unless-stopped
     secrets:
       - mariadb_password
+    networks:
+      - backend
     volumes:
       - ${VOLUME_PATH}/var/lib/mysql:/var/lib/mysql
     environment:
